@@ -69,6 +69,60 @@ public class MatrixCuts {
 			reverse.add(minCut.get(i));
 		}		
 		return reverse;
-		
+	}
+
+	static ArrayList<Tuple> stitchCut(int[][] M) {
+		int[][] P = new int[M.length][M[0].length];
+		// generate cost array
+		for (int i = 0; i < M.length; i++) {
+			for (int j = 0; j < M[0].length; j++) {
+				// cell is in first row
+				if (i == 0) {
+					P[i][j] = M[i][j];
+				}
+				// cell is in first column
+				else if (j == 0) {
+					P[i][j] = M[i - 1][j] + M[i][j];
+				}
+				// cell is in a later column
+				else {
+					P[i][j] = min(M[i - 1][j - 1], M[i - 1][j], M[i][j - 1]) + M[i][j];
+				}
+			}
+		}
+		// backtrack to find tuples
+		ArrayList<Tuple> cut = new ArrayList<Tuple>();
+		Tuple costtuple;
+
+		int mincol = 0;
+		for (int i = M.length - 2; i >= 0; i++) {
+			int mincost = P[P.length - 1][0];
+			// bottom row
+			if (i == M.length - 2) {
+				for (int j = 1; j < M[0].length; j++) {
+					if (P[P.length - 1][j] < mincost) {
+						mincost = P[P.length - 1][j];
+						mincol = j;
+					}
+				}
+				costtuple = new Tuple(mincost, -1);
+			}
+			// not bottom row
+			else {
+				// cell is in first column
+				if (mincol == 0) {
+					cut.add(new Tuple(i, mincol));
+				}
+				// cell is in a later column
+				else {
+				}
+			}
+		}
+		return null;
+
+	}
+
+	private static int min(int a, int b, int c) {
+		return Math.min(a, Math.min(b, c));
 	}
 }
