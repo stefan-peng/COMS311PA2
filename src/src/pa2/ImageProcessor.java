@@ -5,31 +5,17 @@ import java.util.ArrayList;
 public class ImageProcessor {
 	
 	static Picture reduceWidth(int x, String inputImage) {
-		if(x > 0)
-		{
-			Picture p = new Picture(inputImage);
-			int pHeight = p.height();
-			int pWidth = p.width();
-			int[][] importance = new int[pWidth][pHeight];
-			for(int rowIndex = 0; rowIndex < pHeight; rowIndex++) {
-				for(int colIndex = 0; colIndex < pWidth; colIndex++) {
-					if(0 < colIndex && colIndex < pWidth - 1) {
-						importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex - 1, rowIndex), p.get(colIndex + 1, rowIndex));
-					}
-					if(colIndex == 0) {
-						importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex, rowIndex), p.get(colIndex + 1, rowIndex));
-						if(colIndex == pWidth - 1) {
-							importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex, rowIndex), p.get(colIndex - 1, rowIndex));
-						}
-					}
-				}
-			}
+		Picture p = new Picture(inputImage);
+		for(int i = 0; i < x; i++) {
+			int[][] importance = importanceArray(p); 
+			
 			//need to do this next part x times
 			ArrayList<Tuple> pixelsToRemove = new ArrayList<Tuple>();
 			pixelsToRemove.addAll(MatrixCuts.widthCut(importance));
-			Picture reducedPic = new Picture(pWidth - 1, pHeight);
+			Picture reducedPic = new Picture(p.width() - 1, p.height());
+			
 			for(int rowIndex = 0; rowIndex < pixelsToRemove.size(); rowIndex++) {
-				for(int colIndex = 0; colIndex + 1 < pWidth; colIndex++) {
+				for(int colIndex = 0; colIndex + 1 < p.width(); colIndex++) {
 					if(colIndex >= pixelsToRemove.get(rowIndex).getY())
 					{
 						reducedPic.set(colIndex, rowIndex, p.get(colIndex + 1, rowIndex));
@@ -38,16 +24,29 @@ public class ImageProcessor {
 					}
 				}
 			}
-			
-			//Recursively call to do this x times removing 1 width each time
-			return reduceWidth(x - 1, reducedPic);
-		}else {
-			Picture p = new Picture(inputImage);
-			p.save("reducedPic");
-			return p;
+			p = reducedPic;
 		}
-		
-		return null;		
+		return p;
+	}
+	
+	private static int[][] importanceArray(Picture p) {
+		int pHeight = p.height();
+		int pWidth = p.width();
+		int[][] importance = new int[pWidth][pHeight];
+		for(int rowIndex = 0; rowIndex < pHeight; rowIndex++) {
+			for(int colIndex = 0; colIndex < pWidth; colIndex++) {
+				if(0 < colIndex && colIndex < pWidth - 1) {
+					importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex - 1, rowIndex), p.get(colIndex + 1, rowIndex));
+				}
+				if(colIndex == 0) {
+					importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex, rowIndex), p.get(colIndex + 1, rowIndex));
+					if(colIndex == pWidth - 1) {
+						importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex, rowIndex), p.get(colIndex - 1, rowIndex));
+					}
+				}
+			}
+		}
+		return importance;
 	}
 
 }
