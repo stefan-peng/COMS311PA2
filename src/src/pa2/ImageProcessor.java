@@ -12,6 +12,7 @@ public class ImageProcessor {
 			//need to do this next part x times
 			ArrayList<Tuple> pixelsToRemove = new ArrayList<Tuple>();
 			pixelsToRemove.addAll(MatrixCuts.widthCut(importance));
+			pixelsToRemove.remove(0);
 			Picture reducedPic = new Picture(p.width() - 1, p.height());
 			
 			for(int rowIndex = 0; rowIndex < pixelsToRemove.size(); rowIndex++) {
@@ -40,7 +41,7 @@ public class ImageProcessor {
 				}else if(colIndex == 0) {
 					importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex, rowIndex), p.get(colIndex + 1, rowIndex));
 				}else if(colIndex == pWidth - 1) {
-						importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex, rowIndex), p.get(colIndex - 1, rowIndex));
+					importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex, rowIndex), p.get(colIndex - 1, rowIndex));
 				}
 			}
 		}
