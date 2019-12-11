@@ -3,7 +3,18 @@ package pa2;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * 
+ * @author Stefan Peng
+ * @author Jacob Ramsey-Smith
+ *
+ */
 public class MatrixCuts {
+	/**
+	 * Finds and returns the width cut of the given matrix
+	 * @param M Input matrix
+	 * @return ArrayList<Tuple> of width cut
+	 */
 	public static ArrayList<Tuple> widthCut(int[][] M) {
 		ArrayList<Tuple> minCut = new ArrayList<Tuple>();
 		int rows = M.length;
@@ -28,40 +39,15 @@ public class MatrixCuts {
 				}
 			}
 		}
-		
-//		for (int rowIndex = 1; rowIndex < rows; rowIndex++) {
-//			for (int columnIndex = 0; columnIndex < cols; columnIndex++) {
-//				int lowest = Integer.MAX_VALUE;
-//				if (columnIndex > 0)
-//					lowest = M[rowIndex - 1][columnIndex - 1];
-//				if (M[rowIndex - 1][columnIndex] < lowest)
-//					lowest = M[rowIndex - 1][columnIndex];
-//				if (columnIndex + 1 < cols) {
-//					if (M[rowIndex - 1][columnIndex + 1] < lowest)
-//						lowest = M[rowIndex - 1][columnIndex];
-//				}
-//				lowest += M[rowIndex][columnIndex];
-//				countArray[rowIndex][columnIndex] = lowest;
-//			}
-//		}
-		
-		for (int k = 0; k < rows; k++) {
-			for (int j = 0; j < cols; j++) {
-				System.out.printf("%2d ", P[k][j]);
-			}
-			System.out.println("\n");
-		}
-		
+
 		// find path and populate minCut array
 		// find smallest in last row
-		int cost = 0;
 		int smallestTotal = Integer.MAX_VALUE;
 		int indexOfSmallest = 0;
 		for (int columnIndex = 0; columnIndex < cols; columnIndex++) {
 			if (P[rows - 1][columnIndex] < smallestTotal) {
 				smallestTotal = P[rows - 1][columnIndex];
 				indexOfSmallest = columnIndex;
-				cost = smallestTotal;
 			}
 		}
 		Tuple tuple = new Tuple(rows - 1, indexOfSmallest);
@@ -100,6 +86,11 @@ public class MatrixCuts {
 		return reverse;
 	}
 
+	/**
+	 * Finds and returns stitch cut of given matrix
+	 * @param M Input matrix
+	 * @return ArrayList<Tuple> of stitch cut
+	 */
 	public static ArrayList<Tuple> stitchCut(int[][] M) {
 		int[][] P = new int[M.length][M[0].length];
 		// generate cost array
@@ -131,14 +122,6 @@ public class MatrixCuts {
 		int i = rows - 1;
 		int mincost = P[i][0];
 
-		// testing
-		//		for (int k = 0; k < rows; k++) {
-		//			for (int j = 0; j < cols; j++) {
-		//				System.out.printf("%2d ", P[k][j]);
-		//			}
-		//			System.out.println("\n");
-		//		}
-
 		// bottom row, find minimum total cost
 		for (int j = 0; j < cols; j++) {
 			if (P[i][j] < mincost) {
@@ -154,9 +137,9 @@ public class MatrixCuts {
 		while (i > 0) {
 			// find minimum of left, top, diagonal
 
-			////			int left = P[i][mincol-1];
-			////			int diagonal =  P[i-1][mincol-1];
-			////			int top = P[i-1][mincol];
+			//			int left = P[i][mincol-1];
+			//			int diagonal =  P[i-1][mincol-1];
+			//			int top = P[i-1][mincol];
 
 			// left cell has lowest cost
 			if (mincol > 0 && P[i][mincol-1] < P[i-1][mincol] && P[i][mincol-1] < P[i-1][mincol-1]) {
