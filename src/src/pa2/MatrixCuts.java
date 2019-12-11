@@ -8,32 +8,58 @@ public class MatrixCuts {
 		ArrayList<Tuple> minCut = new ArrayList<Tuple>();
 		int rows = M.length;
 		int cols = M[0].length;
-		int[][] countArray = new int[rows][cols];
-		// TODO test this and make sure it works just putting the
+		int[][] P = new int[rows][cols];
 		// first row of M into countArray
-		countArray[0] = M[0];
+		P[0] = M[0];
 		// populate countArray
-		for (int rowIndex = 1; rowIndex < rows; rowIndex++) {
-			for (int columnIndex = 0; columnIndex < cols; columnIndex++) {
-				int lowest = Integer.MAX_VALUE;
-				if (columnIndex > 0)
-					lowest = M[rowIndex - 1][columnIndex - 1] + M[rowIndex][columnIndex];
-				if (M[rowIndex - 1][columnIndex] + M[rowIndex][columnIndex] < lowest)
-					lowest = M[rowIndex - 1][columnIndex];
-				if (columnIndex + 1 < cols) {
-					if (M[rowIndex - 1][columnIndex + 1] < lowest)
-						lowest = M[rowIndex - 1][columnIndex];
+		for (int i = 1; i < M.length; i++) {
+			for (int j = 0; j < M[0].length; j++) {
+				// cell is in first column
+				if (j == 0) {
+					P[i][j] = P[i - 1][j] + M[i][j];
+				}
+				// cell is in a middle column
+				else if (j + 1 < cols) {
+					P[i][j] = min(P[i - 1][j - 1], P[i - 1][j], P[i-1][j + 1]) + M[i][j];
+				}
+				// cell is in last column 
+				else {
+					P[i][j] = Math.min(P[i - 1][j - 1], P[i - 1][j]) + M[i][j];
 				}
 			}
 		}
+		
+//		for (int rowIndex = 1; rowIndex < rows; rowIndex++) {
+//			for (int columnIndex = 0; columnIndex < cols; columnIndex++) {
+//				int lowest = Integer.MAX_VALUE;
+//				if (columnIndex > 0)
+//					lowest = M[rowIndex - 1][columnIndex - 1];
+//				if (M[rowIndex - 1][columnIndex] < lowest)
+//					lowest = M[rowIndex - 1][columnIndex];
+//				if (columnIndex + 1 < cols) {
+//					if (M[rowIndex - 1][columnIndex + 1] < lowest)
+//						lowest = M[rowIndex - 1][columnIndex];
+//				}
+//				lowest += M[rowIndex][columnIndex];
+//				countArray[rowIndex][columnIndex] = lowest;
+//			}
+//		}
+		
+		for (int k = 0; k < rows; k++) {
+			for (int j = 0; j < cols; j++) {
+				System.out.printf("%2d ", P[k][j]);
+			}
+			System.out.println("\n");
+		}
+		
 		// find path and populate minCut array
 		// find smallest in last row
 		int cost = 0;
 		int smallestTotal = Integer.MAX_VALUE;
 		int indexOfSmallest = 0;
 		for (int columnIndex = 0; columnIndex < cols; columnIndex++) {
-			if (countArray[rows - 1][columnIndex] < smallestTotal) {
-				smallestTotal = countArray[rows - 1][columnIndex];
+			if (P[rows - 1][columnIndex] < smallestTotal) {
+				smallestTotal = P[rows - 1][columnIndex];
 				indexOfSmallest = columnIndex;
 				cost = smallestTotal;
 			}
@@ -46,23 +72,24 @@ public class MatrixCuts {
 		for (int rowIndex = rows - 2; rowIndex >= 0; rowIndex--) {
 			rowMin = Integer.MAX_VALUE;
 			if (indexOfSmallest + 1 < cols) {
-				rowMin = countArray[rowIndex][indexOfSmallest + 1];
+				rowMin = P[rowIndex][indexOfSmallest + 1];
 				tempIndexOfSmallest = indexOfSmallest + 1;
 			}
 			if (indexOfSmallest - 1 >= 0) {
-				if (rowMin > countArray[rowIndex][indexOfSmallest - 1]) {
-					rowMin = countArray[rowIndex][indexOfSmallest - 1];
+				if (rowMin > P[rowIndex][indexOfSmallest - 1]) {
+					rowMin = P[rowIndex][indexOfSmallest - 1];
 					tempIndexOfSmallest = indexOfSmallest - 1;
 				}
 			}
-			if (rowMin > countArray[rowIndex][indexOfSmallest]) {
-				rowMin = countArray[rowIndex][indexOfSmallest];
+			if (rowMin > P[rowIndex][indexOfSmallest]) {
+				rowMin = P[rowIndex][indexOfSmallest];
 				tempIndexOfSmallest = indexOfSmallest;
 			}
 			indexOfSmallest = tempIndexOfSmallest;
 			Tuple tuple1 = new Tuple(rowIndex, indexOfSmallest);
 			minCut.add(tuple1);
 		}
+		minCut.add(new Tuple(smallestTotal, -1));
 
 		// minCut is currently backwards. Fill in another array by iterating backwards
 		// through minCut
@@ -73,7 +100,7 @@ public class MatrixCuts {
 		return reverse;
 	}
 
-	static ArrayList<Tuple> stitchCut(int[][] M) {
+	public static ArrayList<Tuple> stitchCut(int[][] M) {
 		int[][] P = new int[M.length][M[0].length];
 		// generate cost array
 		for (int i = 0; i < M.length; i++) {

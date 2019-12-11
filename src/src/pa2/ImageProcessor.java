@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class ImageProcessor {
 	
-	static Picture reduceWidth(int x, String inputImage) {
+	public static Picture reduceWidth(int x, String inputImage) {
 		Picture p = new Picture(inputImage);
 		for(int i = 0; i < x; i++) {
 			int[][] importance = importanceArray(p); 
