@@ -37,12 +37,10 @@ public class ImageProcessor {
 			for(int colIndex = 0; colIndex < pWidth; colIndex++) {
 				if(0 < colIndex && colIndex < pWidth - 1) {
 					importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex - 1, rowIndex), p.get(colIndex + 1, rowIndex));
-				}
-				if(colIndex == 0) {
+				}else if(colIndex == 0) {
 					importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex, rowIndex), p.get(colIndex + 1, rowIndex));
-					if(colIndex == pWidth - 1) {
+				}else if(colIndex == pWidth - 1) {
 						importance[rowIndex][colIndex] = ImageStitch.pixelDistance(p.get(colIndex, rowIndex), p.get(colIndex - 1, rowIndex));
-					}
 				}
 			}
 		}
